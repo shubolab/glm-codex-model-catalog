@@ -27,7 +27,7 @@ Flash 条目根据官方模型说明适配：官方标注 1M 上下文、原生�
 
 ## 使用方法
 
-### macOS / Linux 下载
+### macOS / Linux 下载与配置
 
 macOS / Linux 可以直接用 `curl` 下载两个文件：
 
@@ -44,6 +44,23 @@ curl -fSL \
 ```
 
 以上命令会写入或更新 `~/.codex/models.json` 和 `~/.codex/config.example.toml`，**不会写入或覆盖已有的 `~/.codex/config.toml`**。已有模型目录时，请先备份并检查是否需要保留其他模型。下载后，首次配置可以将示例复制为 `config.toml`；已有配置请按下方说明手动合并。
+
+下载完成后，可执行以下命令首次创建配置。已有文件或符号链接时只提示手动合并；创建时也禁止覆盖：
+
+```bash
+codex_config="$HOME/.codex/config.toml"
+codex_example="$HOME/.codex/config.example.toml"
+
+if [ -e "$codex_config" ] || [ -L "$codex_config" ]; then
+  printf '%s\n' 'config.toml 已存在，未覆盖。请备份后手动合并 config.example.toml 中的字段。'
+elif (set -C; cat "$codex_example" > "$codex_config"); then
+  printf '%s\n' '已创建 config.toml，请编辑并替换 API Key 占位符。'
+else
+  printf '%s\n' '创建失败，请检查示例文件和目标路径；如配置已存在，请手动合并。' >&2
+fi
+```
+
+随后用文本编辑器打开 `~/.codex/config.toml`，将 API Key 占位符替换为智谱国内 Coding Plan 的实际 Key。已有配置时，对照 `config.example.toml` 手动合并下节列出的顶层字段和 `[model_providers.ZAI]`，避免重复定义同名字段或表；保留需要的其他配置。保存后重启 Codex CLI / Desktop。
 
 ### Windows PowerShell 下载与配置
 
