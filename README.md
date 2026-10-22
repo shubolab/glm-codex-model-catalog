@@ -27,6 +27,22 @@ Flash 条目根据官方模型说明适配：官方标注 1M 上下文、原生�
 
 ## 使用方法
 
+macOS / Linux 可以直接用 `curl` 下载两个文件：
+
+```bash
+mkdir -p "$HOME/.codex"
+
+curl -fSL \
+  https://raw.githubusercontent.com/shubolab/glm-codex-model-catalog/main/models.json \
+  -o "$HOME/.codex/models.json"
+
+curl -fSL \
+  https://raw.githubusercontent.com/shubolab/glm-codex-model-catalog/main/config.example.toml \
+  -o "$HOME/.codex/config.example.toml"
+```
+
+以上命令会写入或更新 `~/.codex/models.json` 和 `~/.codex/config.example.toml`，**不会写入或覆盖已有的 `~/.codex/config.toml`**。已有模型目录时，请先备份并检查是否需要保留其他模型。下载后，首次配置可以将示例复制为 `config.toml`；已有配置请按下方说明手动合并。
+
 1. 下载本仓库的 [`models.json`](models.json)，保存为 `~/.codex/models.json`。已有模型目录时，先备份并检查是否需要保留其中其他模型。
 2. 下载 [`config.example.toml`](config.example.toml)。首次配置时，将它复制为 `~/.codex/config.toml`；已有配置时，备份后合并对应字段。示例内容如下：
 
