@@ -1,0 +1,14 @@
+# 默认模型与推理档位
+model_provider = "ZAI"
+model = "glm-5.3-flash"
+model_reasoning_effort = "max"
+
+# 包含三个 GLM 模型的目录文件
+model_catalog_json = "~/.codex/models.json"
+
+# 智谱国内 Coding Plan：Codex 专用 Responses 接口
+[model_providers.ZAI]
+name = "ZAI"
+base_url = "https://open.bigmodel.cn/api/v1"
+wire_api = "responses"
+experimental_bearer_token = "<替换为你的智谱 Coding Plan API Key>"

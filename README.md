@@ -21,21 +21,31 @@ Flash 条目根据官方模型说明适配：官方标注 1M 上下文、原生�
 | 文件 | 用途 |
 | --- | --- |
 | `models.json` | 三个模型的完整 Codex 目录 |
+| [`config.example.toml`](config.example.toml) | 智谱国内 Coding Plan 配置示例，默认使用 `glm-5.3-flash` |
 | `README.md` | 安装方法、字段来源和验证边界 |
 | `LICENSE` | MIT 许可证 |
 
 ## 使用方法
 
-1. 下载本仓库的 `models.json`，保存到稳定位置，例如 `~/.codex/models.json`。已有模型目录时，先备份并检查是否需要保留其中其他模型。
-2. 在现有 `~/.codex/config.toml` 中设置以下顶层字段：
+1. 下载本仓库的 [`models.json`](models.json)，保存为 `~/.codex/models.json`。已有模型目录时，先备份并检查是否需要保留其中其他模型。
+2. 下载 [`config.example.toml`](config.example.toml)。首次配置时，将它复制为 `~/.codex/config.toml`；已有配置时，备份后合并对应字段。示例内容如下：
 
 ```toml
+model_provider = "ZAI"
 model = "glm-5.3-flash"
 model_reasoning_effort = "max"
-model_catalog_json = "/absolute/path/to/models.json"
+model_catalog_json = "~/.codex/models.json"
+
+[model_providers.ZAI]
+name = "ZAI"
+base_url = "https://open.bigmodel.cn/api/v1"
+wire_api = "responses"
+experimental_bearer_token = "<替换为你的智谱 Coding Plan API Key>"
 ```
 
-将 `/absolute/path/to/models.json` 替换为实际的绝对路径。`model` 可以切换为表中的任意一个 slug。
+`model_provider`、`model`、`model_reasoning_effort` 和 `model_catalog_json` 是顶层字段，合并配置时放在 `[model_providers.ZAI]` 等表头之前。`model_provider = "ZAI"` 对应下方的 `[model_providers.ZAI]`。
+
+如果模型目录保存在其他位置，请修改 `model_catalog_json` 为实际的绝对路径。`model` 可以切换为表中的任意一个 slug。
 
 Windows 路径示例：
 
@@ -43,7 +53,9 @@ Windows 路径示例：
 model_catalog_json = 'C:\Users\<you>\.codex\models.json'
 ```
 
-3. 保留现有可用的 provider 和鉴权配置。如果首次接入，按[智谱官方 Codex 文档](https://docs.bigmodel.cn/cn/coding-plan/tool/codex)配置 GLM Coding Plan API Key 和 Responses provider：
+3. 在自己的 `config.toml` 中，将 API Key 占位符替换为智谱国内 **Coding Plan** 的实际 Key。个人版在“个人编程套餐 → 套餐概览”创建，团队版在“团队编程套餐 → 我的套餐”创建；它们与模型标准 API 的 Key 分开管理。示例文件中只保留占位符。
+
+本示例默认使用下表中的智谱中国站。若已有其他可用 provider，按需保留其配置；若使用 Z.ai 国际站，请按对应[官方说明](https://docs.z.ai/devpack/tool/codex)配置端点和鉴权。
 
 | 服务 | 官方 Codex Base URL | `wire_api` |
 | --- | --- | --- |
@@ -79,7 +91,7 @@ codex debug models -c 'model_catalog_json="/absolute/path/to/models.json"'
 - `effective_context_window_percent` 保留为 95。
 - `truncation_policy.limit` 为工具输出截断参数，保留为 10000；它与上下文窗口、模型最大输出长度是不同字段。
 - Flash 官方支持视频、文件等输入；本目录仅按 Codex 使用场景声明文本和图片。
-- 本仓库只提供模型目录，API Key 请保存在自己的本机配置或环境变量中。
+- 本仓库提供模型目录和配置示例，API Key 请保存在自己的本机配置或环境变量中。
 
 ## 参考
 
