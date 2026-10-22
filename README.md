@@ -27,6 +27,8 @@ Flash 条目根据官方模型说明适配：官方标注 1M 上下文、原生�
 
 ## 使用方法
 
+### macOS / Linux 下载
+
 macOS / Linux 可以直接用 `curl` 下载两个文件：
 
 ```bash
@@ -42,6 +44,52 @@ curl -fSL \
 ```
 
 以上命令会写入或更新 `~/.codex/models.json` 和 `~/.codex/config.example.toml`，**不会写入或覆盖已有的 `~/.codex/config.toml`**。已有模型目录时，请先备份并检查是否需要保留其他模型。下载后，首次配置可以将示例复制为 `config.toml`；已有配置请按下方说明手动合并。
+
+### Windows PowerShell 下载与配置
+
+在 Windows PowerShell 5.1 或 PowerShell 7 中执行：
+
+```powershell
+$codexDir = Join-Path $env:USERPROFILE '.codex'
+New-Item -ItemType Directory -Path $codexDir -Force -ErrorAction Stop | Out-Null
+
+Invoke-WebRequest -UseBasicParsing -ErrorAction Stop `
+  -Uri 'https://raw.githubusercontent.com/shubolab/glm-codex-model-catalog/main/models.json' `
+  -OutFile (Join-Path $codexDir 'models.json')
+
+Invoke-WebRequest -UseBasicParsing -ErrorAction Stop `
+  -Uri 'https://raw.githubusercontent.com/shubolab/glm-codex-model-catalog/main/config.example.toml' `
+  -OutFile (Join-Path $codexDir 'config.example.toml')
+```
+
+文件保存到当前用户的 `%USERPROFILE%\.codex` 目录。下载会写入或更新 `models.json` 和 `config.example.toml`，**不会写入或覆盖 `config.toml`**。已有模型目录时，请先备份并检查是否需要保留其他模型。
+
+首次配置可执行以下命令。若已有 `config.toml`，只提示手动合并；复制时同时使用禁止覆盖的选项，避免覆盖执行期间新出现的文件：
+
+```powershell
+$codexDir = Join-Path $env:USERPROFILE '.codex'
+$configPath = Join-Path $codexDir 'config.toml'
+$examplePath = Join-Path $codexDir 'config.example.toml'
+
+if (Test-Path -LiteralPath $configPath) {
+    Write-Host 'config.toml 已存在，未覆盖。请备份后手动合并 config.example.toml 中的字段。'
+} else {
+    [System.IO.File]::Copy($examplePath, $configPath, $false)
+    Write-Host '已创建 config.toml，请编辑并替换 API Key 占位符。'
+}
+```
+
+然后用记事本打开配置：
+
+```powershell
+notepad (Join-Path $env:USERPROFILE '.codex\config.toml')
+```
+
+将 API Key 占位符替换为智谱国内 Coding Plan 的实际 Key。已有配置时，对照 `config.example.toml` 手动合并下节列出的顶层字段和 `[model_providers.ZAI]`，避免重复定义同名字段或表；保留需要的其他配置。
+
+示例默认使用 `glm-5.3-flash`、`max` 推理和国内 Responses 接口。`model_catalog_json = "~/.codex/models.json"` 与下载位置对应，也可以改为下节展示的 Windows 绝对路径。保存后重启 Codex CLI / Desktop。
+
+### 通用配置说明
 
 1. 下载本仓库的 [`models.json`](models.json)，保存为 `~/.codex/models.json`。已有模型目录时，先备份并检查是否需要保留其中其他模型。
 2. 下载 [`config.example.toml`](config.example.toml)。首次配置时，将它复制为 `~/.codex/config.toml`；已有配置时，备份后合并对应字段。示例内容如下：
